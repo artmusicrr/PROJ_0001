@@ -6,4 +6,10 @@ const nextConfig = {
   images: { unoptimized: true },
 };
 
-module.exports = nextConfig;
+module.exports = {
+  reactStrictMode: true,
+  output: "standalone",
+  // experimental: {
+  //   appDir: true, // Habilita a nova estrutura `app/`
+  // },
+};
