@@ -1,15 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
+    output: "standalone",
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
 };
 
-module.exports = {
-  reactStrictMode: true,
-  output: "standalone",
-  // experimental: {
-  //   appDir: true, // Habilita a nova estrutura `app/`
-  // },
-};
+module.exports = nextConfig;
