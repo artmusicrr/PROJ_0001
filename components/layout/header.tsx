@@ -3,6 +3,8 @@
 import { ShoppingCart, Menu, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
+import { useCart } from "@/providers/CartProvider"
+import { CartModal } from "@/components/ui/cart-modal"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +15,9 @@ import Link from "next/link"
 
 export default function Header() {
   const { setTheme } = useTheme()
+  const { setIsOpen, items } = useCart()
+
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -56,8 +61,13 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="relative" onClick={() => setIsOpen(true)}>
             <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground w-5 h-5 rounded-full text-xs flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
             <span className="sr-only">Shopping cart</span>
           </Button>
           
@@ -67,6 +77,7 @@ export default function Header() {
           </Button>
         </div>
       </div>
+      <CartModal />
     </header>
   )
 }

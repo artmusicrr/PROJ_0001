@@ -1,4 +1,10 @@
+'use client';
+
 import Image from 'next/image'
+import { CartModal } from "@/components/ui/cart-modal"
+import { useCart } from "@/providers/CartProvider"
+import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/utils"
 
 const products = [
   {
@@ -40,13 +46,30 @@ const products = [
 ]
 
 export default function ProductsPage() {
+  const { addItem, setIsOpen, items } = useCart()
+  
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id.toString(), // Convertendo para string
+      name: product.name,
+      price: product.price,
+      imageUrl: product.image
+    })
+    setIsOpen(true)
+  }
+
+  const getProductQuantity = (productId: number) => {
+    const item = items.find(item => item.id === productId.toString()) // Convertendo para string
+    return item?.quantity || 0
+  }
+
   return (
-    <div className="container py-16 px-4 md:px-6">
+    <div className="container mx-auto py-16 px-4 md:px-6">
       <h1 className="text-4xl font-bold tracking-tight mb-8">Our Products</h1>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-auto">
         {products.map((product) => (
-          <div key={product.id} className="relative group">
-            <div className="bg-muted w-[300px] h-[300px] aspect-square rounded-lg overflow-hidden">
+          <div key={product.id} className="relative group flex flex-col h-full">
+            <div className="bg-muted aspect-square rounded-lg overflow-hidden">
               <Image
                 src={product.image}
                 alt={product.name}
@@ -55,18 +78,29 @@ export default function ProductsPage() {
                 className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-col flex-1">
               <h3 className="font-semibold">{product.name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(product.price)}
+              <p className="text-sm text-muted-foreground mb-2">
+                {formatCurrency(product.price)}
               </p>
+              <div className="flex items-center gap-2 mt-auto">
+                <Button 
+                  onClick={() => handleAddToCart(product)}
+                  className="flex-1"
+                >
+                  Adicionar ao Carrinho
+                </Button>
+                {getProductQuantity(product.id) > 0 && (
+                  <div className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">
+                    {getProductQuantity(product.id)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
       </div>
+      <CartModal />
     </div>
   )
 }
